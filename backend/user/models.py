@@ -1,5 +1,5 @@
-from backend.core.postgres.base import BaseModel
-from backend.user.exceptions import UserExists
+from core.postgres.base import BaseModel
+from user.exceptions import UserExists
 from sqlalchemy import Column, Integer, String, insert, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession

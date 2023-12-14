@@ -1,4 +1,4 @@
-from backend.config import settings
+from config import settings
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 

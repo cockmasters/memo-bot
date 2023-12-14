@@ -1,11 +1,11 @@
-from backend.core.exceptions import BusinessException
+from core.exceptions import BusinessException
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from .config import settings
-from .healthcheck.routes import router as healthcheck_router
-from .user.routes import router as user_router
+from config import settings
+from healthcheck.routes import router as healthcheck_router
+from user.routes import router as user_router
 
 app = FastAPI(
     title=settings.app_name,
