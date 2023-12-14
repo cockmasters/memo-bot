@@ -36,6 +36,8 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Load env
         run: echo "${{ secrets.ENV_CONTENTS}}" > .env
+      - run: echo "POSTGRES_HOST=postgres" >> .env
+      - run: echo "POSTGRES_PORT=5432" >> .env
       - name: Migrate db
         run: DOCKER_HOST=ssh://${{ steps.ssh-context.outputs.SERVER }} docker run --env-file .env --network net huscker/memo-bot-backend:$(git rev-parse --short "$GITHUB_SHA") alembic upgrade head
 
