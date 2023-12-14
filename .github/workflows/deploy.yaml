@@ -4,7 +4,7 @@ on:
   push:
     branches: ["master"]
 jobs:
-  build:
+  build-backend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -14,13 +14,13 @@ jobs:
           username: huscker
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build the Docker image
-        run: docker build . -t huscker/memo-bot-backend:$(git rev-parse --short "$GITHUB_SHA")
+        run: docker build backend/ -t huscker/memo-bot-backend:$(git rev-parse --short "$GITHUB_SHA")
       - name: Push the Docker image
         run: docker push huscker/memo-bot-backend:$(git rev-parse --short "$GITHUB_SHA")
 
   migrate:
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: [build-backend]
     steps:
       - uses: actions/checkout@v3
       - id: ssh-context
@@ -41,7 +41,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: [migrate]
+    needs: [build-backend]
     steps:
       - uses: actions/checkout@v3
       - id: ssh-context
