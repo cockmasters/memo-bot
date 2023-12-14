@@ -62,6 +62,6 @@ jobs:
       - name: Update docker tag
         run: echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> .env
       - name: Kill previous deployment
-        run: DOCKER_HOST=ssh://${{ steps.ssh-context.outputs.SERVER }} docker-compose -p memo-bot-dev stop backend
+        run: DOCKER_HOST=ssh://${{ steps.ssh-context.outputs.SERVER }} docker-compose -p memo-bot-dev stop api
       - name: Recreate deployment
-        run: DOCKER_HOST=ssh://${{ steps.ssh-context.outputs.SERVER }} docker-compose -p memo-bot-dev up -d backend
+        run: DOCKER_HOST=ssh://${{ steps.ssh-context.outputs.SERVER }} docker-compose -p memo-bot-dev up -d api
