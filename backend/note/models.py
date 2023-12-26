@@ -50,7 +50,9 @@ class Note(BaseModel):
     async def search_by_title(
         user_id: int, title: str, session: AsyncSession
     ) -> list["Note"]:
-        pass
+        query = select(Note).where(Note.user_id == user_id, Note.title == title)
+        notes: list = list((await session.execute(query)).scalars().all())
+        return notes
 
     @staticmethod
     async def search_by_tags(
@@ -60,7 +62,9 @@ class Note(BaseModel):
 
     @staticmethod
     async def get_all(user_id: int, session: AsyncSession) -> list["Note"]:
-        pass
+        query = select(Note).where(Note.user_id == user_id)
+        notes = list((await session.execute(query)).scalars().all())
+        return notes
 
 
 class Tag(BaseModel):
@@ -88,4 +92,6 @@ class Tag(BaseModel):
 
     @staticmethod
     async def get_all(user_id: int, session: AsyncSession) -> list["Tag"]:
-        pass
+        query = select(Tag).where(Tag.user_id == user_id)
+        tags = list((await session.execute(query)).scalars().all())
+        return tags
