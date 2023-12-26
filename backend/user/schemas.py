@@ -7,6 +7,7 @@ class UserCreate(BaseModel):
 
 
 class UserFull(BaseModel):
+    id: int
     tg_id: int
     username: str
 

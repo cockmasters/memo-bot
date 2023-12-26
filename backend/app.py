@@ -1,11 +1,12 @@
+import uvicorn
+from config import settings
 from core.exceptions import BusinessException
+from healthcheck.routes import router as healthcheck_router
+from note.routes import router as note_router
+from user.routes import router as user_router
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-
-from config import settings
-from healthcheck.routes import router as healthcheck_router
-from user.routes import router as user_router
 
 app = FastAPI(
     title=settings.app_name,
@@ -22,7 +23,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(healthcheck_router, tags=["Healthcheck"], prefix="/api")
-app.include_router(user_router, tags=["Organisation"], prefix="/api/user")
+app.include_router(user_router, tags=["User"], prefix="/api/user")
+app.include_router(note_router, tags=["Note"], prefix="/api/note")
 
 
 @app.exception_handler(Exception)
@@ -38,3 +40,7 @@ async def exception_handler(request: Request, exc: Exception):
 @app.exception_handler(BusinessException)
 async def business_exception_handler(request: Request, exc: BusinessException):
     return JSONResponse(exc.to_json(), status_code=exc.status_code)
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
