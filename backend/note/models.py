@@ -28,7 +28,7 @@ class Note(BaseModel):
     )
 
     tags: Mapped[list["Tag"]] = relationship(
-        back_populates="note", secondary=association_table
+        back_populates="notes", secondary=association_table
     )
 
     @staticmethod

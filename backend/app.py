@@ -23,8 +23,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(healthcheck_router, tags=["Healthcheck"], prefix="/api")
-app.include_router(user_router, tags=["Organisation"], prefix="/api/user")
-app.include_router(note_router, tags=["Organisation"], prefix="/api/note")
+app.include_router(user_router, tags=["User"], prefix="/api/user")
+app.include_router(note_router, tags=["Note"], prefix="/api/note")
 
 
 @app.exception_handler(Exception)
