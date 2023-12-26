@@ -1,10 +1,10 @@
 import asyncio
 
 from alembic import context
-from backend.config import settings
-from backend.core.postgres.base import Base
-from backend.note.models import Note, Tag  # noqa
-from backend.user.models import User  # noqa
+from config import settings
+from core.postgres.base import Base
+from user.models import User  # noqa
+from note.models import Note, Tag # noqa
 from sqlalchemy.ext.asyncio import create_async_engine
 
 config = context.config

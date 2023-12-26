@@ -1,5 +1,5 @@
-from backend.config import settings
-from backend.core.postgres.base import Base
+from config import settings
+from core.postgres.base import Base
 from sqlalchemy.ext.asyncio import async_sessionmaker  # noqa
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine  # noqa
 

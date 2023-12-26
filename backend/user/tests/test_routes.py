@@ -1,6 +1,6 @@
 import pytest
-from backend.user.models import User
-from backend.user.tests.factories import UserFactory
+from user.models import User
+from user.tests.factories import UserFactory
 from fastapi import status
 from httpx import AsyncClient
 from pytest_lambda import static_fixture

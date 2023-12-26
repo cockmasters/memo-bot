@@ -1,7 +1,7 @@
 import factory
 from async_factory_boy.factory.sqlalchemy import AsyncSQLAlchemyFactory
-from backend.core.tests import test_session
-from backend.user.models import User
+from core.tests import test_session
+from user.models import User
 
 
 class UserFactory(AsyncSQLAlchemyFactory):

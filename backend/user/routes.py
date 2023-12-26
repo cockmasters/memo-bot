@@ -1,4 +1,4 @@
-from backend.core.postgres import get_session
+from core.postgres import get_session
 from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession

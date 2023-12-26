@@ -1,4 +1,4 @@
-from backend.core.exceptions import BusinessException
+from core.exceptions import BusinessException
 from fastapi import status
 
 

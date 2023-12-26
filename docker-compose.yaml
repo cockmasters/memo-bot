@@ -1,0 +1,45 @@
+version: '3.7'
+services:
+  postgres:
+    image: bitnami/postgresql:15.1.0
+    env_file:
+      - .env
+    environment:
+      - POSTGRESQL_DATABASE=${POSTGRES_DATABASE}
+      - POSTGRESQL_USERNAME=${POSTGRES_USER}
+      - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRESQL_POSTGRES_PASSWORD=${POSTGRESQL_POSTGRES_PASSWORD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - net
+    expose:
+      - 5432
+    restart: always
+  api:
+    image: huscker/memo-bot-backend:${IMAGE_TAG}
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    command:
+      - "uvicorn"
+      - "app:app"
+      - "--port"
+      - "8000"
+      - "--host"
+      - "0.0.0.0"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=${POSTGRES_DATABASE}
+    networks:
+      - net
+    restart: always
+networks:
+  net:
+    external: true
+volumes:
+  db-data:

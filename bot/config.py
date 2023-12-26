@@ -10,8 +10,6 @@ class BotSettings(BaseSettings):
 
     BOT_TOKEN: str
 
-    DATABASE_URL: Optional[PostgresDsn] = None
-
     class Config:
         env_file = ".env"
         extra = "ignore"

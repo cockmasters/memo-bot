@@ -1,0 +1,67 @@
+name: Развертывание
+
+on:
+  push:
+    branches: ["master"]
+jobs:
+  build-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: huscker
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build the Docker image
+        run: docker build backend/ -t huscker/memo-bot-backend:$(git rev-parse --short "$GITHUB_SHA")
+      - name: Push the Docker image
+        run: docker push huscker/memo-bot-backend:$(git rev-parse --short "$GITHUB_SHA")
+
+  migrate:
+    runs-on: ubuntu-latest
+    needs: [build-backend]
+    steps:
+      - uses: actions/checkout@v3
+      - id: ssh-context
+        uses: invi5H/ssh-action@v1
+        with:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: huscker
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Load env
+        run: echo "${{ secrets.ENV_CONTENTS}}" > .env
+      - run: echo "POSTGRES_HOST=postgres" >> .env
+      - run: echo "POSTGRES_PORT=5432" >> .env
+      - name: Migrate db
+        run: DOCKER_HOST=ssh://${{ steps.ssh-context.outputs.SERVER }} docker run --env-file .env --network net huscker/memo-bot-backend:$(git rev-parse --short "$GITHUB_SHA") alembic upgrade head
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [migrate]
+    steps:
+      - uses: actions/checkout@v3
+      - id: ssh-context
+        uses: invi5H/ssh-action@v1
+        with:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: huscker
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Prepare env
+        run: echo "${{ secrets.ENV_CONTENTS}}" > .env
+      - name: Update docker tag
+        run: echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> .env
+      - name: Kill previous deployment
+        run: DOCKER_HOST=ssh://${{ steps.ssh-context.outputs.SERVER }} docker-compose -p memo-bot-dev stop api
+      - name: Recreate deployment
+        run: DOCKER_HOST=ssh://${{ steps.ssh-context.outputs.SERVER }} docker-compose -p memo-bot-dev up -d api
