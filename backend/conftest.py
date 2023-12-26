@@ -2,9 +2,9 @@ import asyncio
 
 import pytest
 import pytest_asyncio
-from backend.app import app as client_app
-from backend.core.postgres import Base
-from backend.core.tests import test_engine
+from app import app as client_app
+from core.postgres import Base
+from core.tests import test_engine
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 

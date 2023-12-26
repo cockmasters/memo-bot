@@ -1,5 +1,7 @@
+from typing import Optional
+
 from core.postgres.base import BaseModel
-from user.exceptions import UserExists
+from user.exceptions import UserExists, UserNotExists
 from sqlalchemy import Column, Integer, String, insert, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,9 +15,20 @@ class User(BaseModel):
     username: Mapped[str] = Column(String, unique=True, nullable=False)
 
     @staticmethod
-    async def get_by_id(tg_id: int, session: AsyncSession) -> "User":
+    async def get_by_tg_id(tg_id: int, session: AsyncSession) -> "User":
         query = select(User).where(User.tg_id == tg_id)
-        return (await session.execute(query)).scalars().first()
+        user: Optional[User] = (await session.execute(query)).scalars().first()
+        if not user:
+            raise UserNotExists
+        return user
+
+    @staticmethod
+    async def get_by_id(user_id: int, session: AsyncSession) -> "User":
+        query = select(User).where(User.id == user_id)
+        user: Optional[User] = (await session.execute(query)).scalars().first()
+        if not user:
+            raise UserNotExists
+        return user
 
     @staticmethod
     async def create(tg_id: int, username: str, session: AsyncSession) -> "User":

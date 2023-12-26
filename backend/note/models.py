@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from backend.core.postgres.base import BaseModel
+from core.postgres.base import BaseModel
 from sqlalchemy import Column, DateTime, ForeignKey, String, Text, insert, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -41,7 +41,7 @@ class Note(BaseModel):
         user_id: int, title: str, body: str, session: AsyncSession
     ) -> "Note":
         query = (
-            insert(Note).values(tg_id=user_id, title=title, body=body).returning(Note)
+            insert(Note).values(user_id=user_id, title=title, body=body).returning(Note)
         )
         note = (await session.execute(query)).scalars().first()
         return note

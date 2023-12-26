@@ -1,9 +1,9 @@
 import uvicorn
-from backend.config import settings
-from backend.core.exceptions import BusinessException
-from backend.healthcheck.routes import router as healthcheck_router
-from backend.note.routes import router as note_router
-from backend.user.routes import router as user_router
+from config import settings
+from core.exceptions import BusinessException
+from healthcheck.routes import router as healthcheck_router
+from note.routes import router as note_router
+from user.routes import router as user_router
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
