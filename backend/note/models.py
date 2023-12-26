@@ -1,11 +1,15 @@
 from datetime import datetime
 
+from sqlalchemy.exc import IntegrityError
+
 from core.postgres.base import BaseModel
 from sqlalchemy import Column, DateTime, ForeignKey, String, Text, insert, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.testing.schema import Table
+
+from note.exceptions import NoteExists
 
 association_table = Table(
     "notes_tags",
@@ -19,9 +23,9 @@ class Note(BaseModel):
     __tablename__ = "note"
 
     user_id: Mapped[int] = mapped_column(
-        ForeignKey("user.id"), nullable=False, unique=True
+        ForeignKey("user.id"), nullable=False
     )
-    title: Mapped[str] = mapped_column(String, nullable=False)
+    title: Mapped[str] = mapped_column(String, nullable=False, unique=True)
     body: Mapped[str] = mapped_column(Text, nullable=False)
     created: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=datetime.utcnow, nullable=False
@@ -43,7 +47,10 @@ class Note(BaseModel):
         query = (
             insert(Note).values(user_id=user_id, title=title, body=body).returning(Note)
         )
-        note = (await session.execute(query)).scalars().first()
+        try:
+            note = (await session.execute(query)).scalars().first()
+        except IntegrityError as e:
+            raise NoteExists(title=title) from e
         return note
 
     @staticmethod
