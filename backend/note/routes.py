@@ -11,8 +11,8 @@ router = APIRouter()
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=NoteFull)
-async def create(note_create: NoteCreate, session: AsyncSession = Depends(get_session)):
-    return await Note.create(**note_create.model_dump(), session=session)
+async def create(note_create: NoteCreate, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+    return await Note.create(user.id, **note_create.model_dump(), session=session)
 
 
 @router.get("/all/", response_model=list[NoteFull])
@@ -20,14 +20,14 @@ async def get_all(user: User = Depends(get_current_user), session: AsyncSession 
     return await Note.get_all(user.id, session)
 
 
-@router.get("/search/title/", response_model=list[NoteFull])
+@router.get("/search/title/", response_model=NoteFull)
 async def search_by_title(
     title: str, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)
 ):
     return await Note.search_by_title(user.id, title, session)
 
 
-@router.get("/search/tags/", response_model=list[NoteFull])
+@router.post("/search/tags/", response_model=list[NoteFull])
 async def search_by_tags(
     tags: list[str], user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)
 ):

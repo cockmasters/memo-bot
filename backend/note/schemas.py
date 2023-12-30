@@ -1,22 +1,7 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel
-
-
-class NoteCreate(BaseModel):
-    user_id: int
-    title: str
-    body: str
-
-
-class NoteFull(BaseModel):
-    user_id: int
-    title: str
-    body: str
-    created: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class TagCreate(BaseModel):
@@ -27,6 +12,23 @@ class TagCreate(BaseModel):
 class TagFull(BaseModel):
     user_id: int
     name: str
+
+    class Config:
+        from_attributes = True
+
+
+class NoteCreate(BaseModel):
+    title: str
+    body: str
+    tags: Optional[list[str]]
+
+
+class NoteFull(BaseModel):
+    user_id: int
+    title: str
+    body: str
+    created: datetime
+    tags: list[TagFull]
 
     class Config:
         from_attributes = True
