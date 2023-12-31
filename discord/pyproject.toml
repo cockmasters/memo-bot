@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "memo-bot"
+name = "discord"
 version = "0.1.0"
 description = ""
 authors = ["huscker <egostalker03@mail.ru>"]
@@ -7,6 +7,9 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
+disnake = "^2.9.1"
+pydantic = "^2.5.3"
+pydantic-settings = "^2.1.0"
 
 
 [build-system]
