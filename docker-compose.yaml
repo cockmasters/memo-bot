@@ -38,6 +38,33 @@ services:
     networks:
       - net
     restart: always
+  tg-bot:
+    image: huscker/memo-bot-tg:${IMAGE_TAG}
+    env_file:
+      - .env
+    environment:
+      - BASE_URL=http://api:8000/
+    networks:
+      - net
+    restart: always
+  vk-bot:
+    image: huscker/memo-bot-vk:${IMAGE_TAG}
+    env_file:
+      - .env
+    environment:
+      - BASE_URL=http://api:8000/
+    networks:
+      - net
+    restart: always
+  discord-bot:
+    image: huscker/memo-bot-discord:${IMAGE_TAG}
+    env_file:
+      - .env
+    environment:
+      - BASE_URL=http://api:8000/
+    networks:
+      - net
+    restart: always
 networks:
   net:
     external: true

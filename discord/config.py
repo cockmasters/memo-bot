@@ -2,7 +2,15 @@ from pydantic_settings import BaseSettings
 
 
 class BotSettings(BaseSettings):
-    BOT_TOKEN: str
+    DISCORD_TOKEN: str
+
+    class Config:
+        env_file = ".env"
+        extra = "ignore"
+
+
+class BackendSettings(BaseSettings):
+    BASE_URL: str
 
     class Config:
         env_file = ".env"
@@ -10,3 +18,4 @@ class BotSettings(BaseSettings):
 
 
 settings = BotSettings(extra="ignore")
+backend_settings = BackendSettings(extra="ignore")

@@ -10,4 +10,4 @@ class EchoClient(disnake.Client):
 
 
 client = EchoClient()
-client.run(settings.BOT_TOKEN)
+client.run(settings.DISCORD_TOKEN)
