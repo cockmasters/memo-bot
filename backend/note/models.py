@@ -4,12 +4,13 @@ from typing import Optional
 from sqlalchemy.exc import IntegrityError
 
 from core.postgres.base import BaseModel
-from sqlalchemy import Column, DateTime, ForeignKey, String, Text, insert, select, UniqueConstraint
+from sqlalchemy import Column, DateTime, ForeignKey, String, Text, insert, select, UniqueConstraint, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, mapped_column, relationship, joinedload
 from sqlalchemy.testing.schema import Table
 
 from note.exceptions import NoteExists, NoteNotExists
+from note.schemas import NoteUpdate
 
 association_table = Table(
     "notes_tags",
@@ -36,7 +37,7 @@ class Note(BaseModel):
     )
     __table_args__ = (
         UniqueConstraint("user_id", "title", name="uix_title_user_id"),
-                      )
+    )
 
     @staticmethod
     async def get_by_user_id(user_id: int, session: AsyncSession) -> "Note":
@@ -47,18 +48,39 @@ class Note(BaseModel):
     async def create(
         user_id: int, title: str, body: str, tags: Optional[list[str]], session: AsyncSession
     ) -> "Note":
-        tag_ids: list = []
-        for tag in tags:
-            tag_ids.append((await Tag.create_or_get(user_id, tag, session)).id)
+        note: Note = Note(
+            user_id=user_id,
+            title=title,
+            body=body
+        )
+        note.tags = [await Tag.create_or_get(user_id, tag, session) for tag in tags] if tags else []
+        session.add(note)
         try:
-            insert_note = insert(Note).values(user_id=user_id, title=title, body=body).returning(Note.id)
-            note_id: int = (await session.execute(insert_note)).scalars().first()
+            await session.commit()
         except IntegrityError as e:
-            raise NoteExists(title=title) from e
-        for tag_id in tag_ids:
-            insert_association = insert(association_table).values(note_id=note_id, tag_id=tag_id)
-            await session.execute(insert_association)
-        return await Note.search_by_title(user_id, title, session)
+            raise NoteExists from e
+        return note
+
+    @staticmethod
+    async def delete(
+        user_id: int, title: str, session: AsyncSession
+    ):
+        note_id: int = (await Note.search_by_title(user_id, title, session)).id
+        association_delete = delete(association_table).filter_by(note_id=note_id).returning(association_table)
+        await session.execute(association_delete)
+        query = delete(Note).filter_by(user_id=user_id, title=title).returning(Note)
+        note = (await session.execute(query)).scalars().first()
+        return note
+
+    @staticmethod
+    async def edit(
+        user_id: int, old_title: str, note: NoteUpdate, session: AsyncSession
+    ) -> "Note":
+        current_note: "Note" = await Note.search_by_title(user_id, old_title, session)
+        note.tags = [await Tag.create_or_get(user_id, tag, session) for tag in note.tags] if note.tags else None
+        for key, value in note.model_dump().items():
+            setattr(current_note, key, value) if value else None
+        return current_note
 
     @staticmethod
     async def search_by_title(

@@ -32,3 +32,16 @@ class NoteFull(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class NoteWithoutTags(BaseModel):
+    user_id: int
+    title: str
+    body: str
+    created: datetime
+
+
+class NoteUpdate(BaseModel):
+    title: Optional[str]
+    body: Optional[str]
+    tags: Optional[list[str]]
