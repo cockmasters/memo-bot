@@ -43,7 +43,7 @@ services:
     env_file:
       - .env
     environment:
-      - BASE_URL=http://api:8000/
+      - BASE_URL=http://api:8000
     networks:
       - net
     restart: always
@@ -52,7 +52,7 @@ services:
     env_file:
       - .env
     environment:
-      - BASE_URL=http://api:8000/
+      - BASE_URL=http://api:8000
     networks:
       - net
     restart: always
@@ -61,7 +61,7 @@ services:
     env_file:
       - .env
     environment:
-      - BASE_URL=http://api:8000/
+      - BASE_URL=http://api:8000
     networks:
       - net
     restart: always
