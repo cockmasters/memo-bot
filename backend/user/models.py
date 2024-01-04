@@ -1,11 +1,11 @@
 from typing import Optional
 
 from core.postgres.base import BaseModel
-from user.exceptions import UserExists, UserNotExists
 from sqlalchemy import Column, Integer, String, insert, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped
+from user.exceptions import UserExists, UserNotExists
 
 
 class User(BaseModel):
