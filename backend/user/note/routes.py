@@ -35,7 +35,7 @@ async def delete(
     note: Note = Depends(get_current_note),
     session: AsyncSession = Depends(get_session),
 ):
-    await Note.delete(note.user_id, note.title, session)
+    await Note.delete(note.id, session)
 
 
 @user_notes_router.get("/all/", response_model=list[NoteFull])

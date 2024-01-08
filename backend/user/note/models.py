@@ -53,11 +53,10 @@ class Note(BaseModel):
         return note
 
     @staticmethod
-    async def delete(user_id: int, title: str, session: AsyncSession):
-        note_id: int = (await Note.search_by_title(user_id, title, session)).id
+    async def delete(note_id: int, session: AsyncSession):
         association_delete = delete(association_table).filter_by(note_id=note_id).returning(association_table)
         await session.execute(association_delete)
-        query = delete(Note).filter_by(user_id=user_id, title=title)
+        query = delete(Note).filter_by(note_id=note_id)
         await session.execute(query)
 
     @staticmethod
