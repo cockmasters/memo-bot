@@ -96,10 +96,10 @@ class Note(BaseModel):
     @staticmethod
     async def get(note_id: int, session: AsyncSession) -> "Note":
         query = select(Note).where(Note.id == note_id).options(joinedload(Note.tags))
-        try:
-            return (await session.execute(query)).scalars().unique().first()
-        except IntegrityError as e:
-            raise NoteNotExists from e
+        note: Note = (await session.execute(query)).scalars().unique().first()
+        if not note:
+            raise NoteNotExists
+        return note
 
     @staticmethod
     async def get_all(user_id: int, session: AsyncSession) -> list["Note"]:
