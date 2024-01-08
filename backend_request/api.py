@@ -1,16 +1,11 @@
+from dataclasses import asdict, is_dataclass
 from functools import partialmethod
-from typing import Any, Optional, Protocol, Type, TypeVar
+from typing import Optional, Type, TypeVar
 
 from backend_request.schemas import CreateUserResponse, GetUserProfileResponse, Note, NoteCreateResponse
 from httpx import AsyncClient, HTTPError
 
-
-class SupportsAsdict(Protocol):
-    def asdict(self) -> dict[str, Any]:
-        pass
-
-
-RESPONSE = TypeVar("RESPONSE", bound=SupportsAsdict)
+RESPONSE = TypeVar("RESPONSE")
 
 
 class BackendApi:
@@ -31,12 +26,12 @@ class BackendApi:
         method: str,
         path: str,
         response_type: Type[RESPONSE],
-        data: Optional[SupportsAsdict] = None,
+        data: Optional = None,
         **path_params,
     ) -> RESPONSE | list[RESPONSE]:
         try:
             path = path.format(**path_params)
-            data = data.asdict() if data else None
+            data = asdict(data) if is_dataclass(data) else None
             async with AsyncClient() as client:
                 response = await client.request(method=method, url=f"{self.base_url}{path}", json=data)
                 response.raise_for_status()
