@@ -22,7 +22,7 @@ association_table = Table(
 class Note(BaseModel):
     __tablename__ = "note"
     # TODO: написать on delete cascade фигню у foreignkey
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete="cascade"), nullable=False)
     title: Mapped[str] = mapped_column(String, nullable=False)
     body: Mapped[str] = mapped_column(Text, nullable=False)
     created: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)

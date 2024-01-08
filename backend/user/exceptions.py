@@ -4,7 +4,7 @@ from fastapi import status
 
 class UserExists(BusinessException):
     status_code = status.HTTP_400_BAD_REQUEST
-    detail_template = "Пользователь {username} существует"
+    detail_template = "Пользователь существует"
     code = "user_exists"
 
 

@@ -16,6 +16,11 @@ services:
     expose:
       - 5432
     restart: always
+  redis:
+    image: 'bitnami/redis:6.2.13'
+    networks:
+      - net
+    restart: always
   api:
     image: huscker/memo-bot-backend:${IMAGE_TAG}
     env_file:
@@ -35,6 +40,7 @@ services:
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
       - POSTGRES_DATABASE=${POSTGRES_DATABASE}
+      - REDIS_HOST=redis
     networks:
       - net
     restart: always
