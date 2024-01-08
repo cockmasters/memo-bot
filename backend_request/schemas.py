@@ -4,11 +4,6 @@ from typing import Optional
 
 
 @dataclass
-class GetUserProfileRequest:
-    tg_id: Optional[int] = None
-
-
-@dataclass
 class GetUserProfileResponse:
     id: int
     username: str
@@ -17,8 +12,9 @@ class GetUserProfileResponse:
 
 @dataclass
 class CreateUserRequest:
-    username: str
     tg_id: Optional[int] = None
+    vk_id: Optional[int] = None
+    ds_id: Optional[int] = None
 
 
 @dataclass
@@ -26,6 +22,8 @@ class CreateUserResponse:
     id: int
     username: str
     tg_id: Optional[int] = None
+    vk_id: Optional[int] = None
+    ds_id: Optional[int] = None
 
 
 @dataclass
