@@ -1,6 +1,6 @@
 from dataclasses import asdict, is_dataclass
 from functools import partialmethod
-from typing import Optional, Type, TypeVar
+from typing import Optional, Type, TypeVar, get_args
 
 from backend_request.schemas import CreateUserResponse, GetUserProfileResponse, Note, NoteCreateResponse
 from httpx import AsyncClient, HTTPError
@@ -40,7 +40,8 @@ class BackendApi:
             raise BackendApi.Error(method, status_code) from exc
         data = response.json()
         if isinstance(data, list):
-            return [response_type(el) for el in data]
+            subtype = get_args(response_type)[0]
+            return [subtype(**el) for el in data]
         return response_type(**response.json())
 
     create_user = partialmethod(request, method="POST", path="/api/user/", response_type=CreateUserResponse)
@@ -50,7 +51,9 @@ class BackendApi:
         path="/api/user/{social_id}/",
         response_type=GetUserProfileResponse,
     )
-    create_note = partialmethod(request, method="POST", path="/api/note/", response_type=NoteCreateResponse)
+    create_note = partialmethod(
+        request, method="POST", path="/api/user/{user_id}/note/", response_type=NoteCreateResponse
+    )
     get_notes_all = partialmethod(
         request,
         method="GET",

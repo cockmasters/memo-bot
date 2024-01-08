@@ -16,6 +16,6 @@ class UserMiddleware(BaseMiddleware[Message]):
         try:
             profile = await api.get_profile(social_id=vk_user.id)
         except BackendApi.Error:
-            user = CreateUserRequest(tg_id=vk_user.id, username="a")  # TODO: fixme
+            user = CreateUserRequest(tg_id=vk_user.id, username=str(vk_user.id))  # TODO: fixme
             profile = await api.create_user(data=user)
         user_id.set(profile.id)

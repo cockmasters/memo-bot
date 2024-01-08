@@ -1,10 +1,9 @@
-from typing import Any
+from backend_request.schemas import Note
 
 
-def format_notes(notes: list[dict[str, Any]]):
-    notes = ["записка"]
-    result = "\n".join([note for note in notes])
-    return result
+def format_notes(notes: list[Note]):
+    note_lines = [f"{position}: {note.title}" for position, note in enumerate(notes, 1)]
+    return "\n".join(note_lines) or "Не найдено"
 
 
 def format_tags(tags: str) -> list[str]:
