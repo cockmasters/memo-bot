@@ -38,21 +38,12 @@ async def delete(
     await Note.delete(note.user_id, note.title, session)
 
 
-@user_notes_router.get("/{title}/", response_model=NoteFull)
-async def get_by_title(
-    title: str,
-    user: User = Depends(get_current_user),
-    session: AsyncSession = Depends(get_session),
-):
-    return await Note.search_by_title(user.id, title, session)
-
-
 @user_notes_router.get("/all/", response_model=list[NoteFull])
 async def get_all(user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     return await Note.get_all(user.id, session)
 
 
-@user_notes_router.post("/filter/")
+@user_notes_router.post("/filter/", response_model=list[NoteFull])
 async def filter_by_title_and_tags(
     note: NoteFilter,
     user: User = Depends(get_current_user),

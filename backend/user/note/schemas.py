@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 
 class TagCreate(BaseModel):
@@ -28,10 +28,15 @@ class NoteFull(BaseModel):
     title: str
     body: str
     created: datetime
-    tags: list[TagFull]
+    tags: list
 
     class Config:
         from_attributes = True
+
+    @model_validator(mode="after")
+    def string_list_tags(self):
+        self.tags = [tag.name for tag in self.tags]
+        return self
 
 
 class NoteUpdate(BaseModel):

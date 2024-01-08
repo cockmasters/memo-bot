@@ -67,6 +67,10 @@ class Note(BaseModel):
             update_note.tags = await asyncio.gather(*coroutines)
         for key, value in update_note.model_dump().items():
             setattr(current_note, key, value) if value is not None else None
+        try:
+            await session.commit()
+        except IntegrityError as e:
+            raise NoteExists(title=update_note.title) from e
         return current_note
 
     @staticmethod
