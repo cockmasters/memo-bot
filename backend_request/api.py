@@ -38,7 +38,7 @@ class BackendApi:
                 response.raise_for_status()
         except HTTPStatusError as exc:
             raise BackendApi.Error(
-                method=method, status_code=response.status_code, message=response.json()["detail"]
+                method=method, status_code=response.status_code, message=response.json().get("detail")
             ) from exc
         except HTTPError as exc:
             status_code = response.status_code if response else None
@@ -50,10 +50,10 @@ class BackendApi:
         return response_type(**response.json())
 
     create_user = partialmethod(request, method="POST", path="/api/user/", response_type=CreateUserResponse)
-    get_profile = partialmethod(
+    get_by_socials = partialmethod(
         request,
         method="GET",
-        path="/api/user/{social_id}/",
+        path="/api/user/?vk_id={vk_id}",
         response_type=GetUserProfileResponse,
     )
     create_note = partialmethod(
@@ -79,4 +79,4 @@ class BackendApi:
         response_type=None,
     )
     get_auth_key = partialmethod(request, method="GET", path="/api/user/{user_id}/auth/key/", response_type=AuthKey)
-    link_account = partialmethod(request, method="POST", path="/api/user/{user_id}/link/")
+    link_account = partialmethod(request, method="POST", path="/api/user/{user_id}/link/", response_type=dict)
