@@ -4,11 +4,10 @@ from typing import Optional
 
 from core.postgres.base import BaseModel
 from sqlalchemy import Column, DateTime, ForeignKey, String, Text, delete, func, insert, select, update
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, joinedload, mapped_column, relationship
 from sqlalchemy.testing.schema import Table
-from user.note.exceptions import NoteExists, NoteNotExists
+from user.note.exceptions import NoteNotExists
 from user.note.schemas import NoteFilter, NoteUpdate
 
 association_table = Table(
@@ -44,10 +43,6 @@ class Note(BaseModel):
         note: Note = Note(user_id=user_id, title=title, body=body)
         note.tags = [await Tag.create_or_get(tag, session) for tag in tags] if tags else []
         session.add(note)
-        try:
-            await session.commit()
-        except IntegrityError as e:
-            raise NoteExists(title=title) from e
         return note
 
     @staticmethod
@@ -64,10 +59,6 @@ class Note(BaseModel):
             update_note.tags = await asyncio.gather(*coroutines)
         for key, value in update_note.model_dump().items():
             setattr(current_note, key, value) if value is not None else None
-        try:
-            await session.commit()
-        except IntegrityError as e:
-            raise NoteExists(title=update_note.title) from e
         return current_note
 
     @staticmethod

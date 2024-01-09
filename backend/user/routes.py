@@ -41,15 +41,15 @@ async def get_auth_key(user: User = Depends(get_current_user), session: aioredis
     return UserCode(code=code)
 
 
-@router.post("/link/", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/{user_id}/link/", status_code=status.HTTP_204_NO_CONTENT)
 async def link_account(
-    code: str,
+    code: UserCode,
     user: User = Depends(get_current_user),
     redis_session: aioredis.Redis = Depends(get_redis_session),
     postgres_session: AsyncSession = Depends(get_postgres_session),
 ):
-    user_id: Optional[int] = await auth_key_repository.get_user_id(code, redis_session)
+    user_id: Optional[int] = await auth_key_repository.get_user_id(code.code, redis_session)
     if not user_id:
         raise CodeMismatch
     await merge_accounts(user.id, user_id, postgres_session)
-    await auth_key_repository.delete(code, session=redis_session)
+    await auth_key_repository.delete(code.code, session=redis_session)

@@ -5,6 +5,7 @@ from pytest_lambda import static_fixture
 from sqlalchemy import Exists, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from user.models import User
+from user.note.models import Note
 from user.tests.factories import UserFactory
 
 pytestmark = pytest.mark.asyncio
@@ -70,7 +71,7 @@ class TestAuthKey:
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["code"] is not None
 
-    async def test_raise_user_not_exists(self, get_url, client: AsyncClient):
+    async def test_raises_user_not_exists(self, get_url, client: AsyncClient):
         response = await client.get(get_url(727))
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -78,7 +79,79 @@ class TestAuthKey:
 
 
 class TestLinkAccount:
-    get_url = static_fixture(lambda user_id, code: f"/api/user/link/?{code}&{user_id}")
+    get_url = static_fixture(lambda user_id: f"/api/user/{user_id}/link/")
+    get_url_key = static_fixture(lambda user_id: f"/api/user/{user_id}/auth/key/")
 
-    async def test_ok(self):
-        pass
+    async def test_ok(self, get_url, get_url_key, client: AsyncClient):
+        user_1 = await UserFactory(tg_id=10)
+        user_2 = await UserFactory(vk_id=123, ds_id=123)
+
+        response_key = await client.get(get_url_key(user_1.id))
+        code = response_key.json()["code"]
+
+        response_linking = await client.post(get_url(user_2.id), json={"code": code})
+
+        assert response_linking.status_code == status.HTTP_204_NO_CONTENT
+
+    async def test_accounts_merged(self, get_url, get_url_key, client: AsyncClient, async_session: AsyncSession):
+        tg_id = 10
+        vk_id = 123
+        ds_id = 123
+        user_1 = await UserFactory(tg_id=tg_id, vk_id=None, ds_id=None)
+        user_2 = await UserFactory(tg_id=None, vk_id=vk_id, ds_id=ds_id)
+
+        response_key = await client.get(get_url_key(user_1.id))
+        code = response_key.json()["code"]
+        response_linking = await client.post(get_url(user_2.id), json={"code": code})
+        assert response_linking.status_code == status.HTTP_204_NO_CONTENT
+
+        query = select(User)
+        merged_user = (await async_session.execute(query)).scalars().first()
+
+        assert merged_user.tg_id == tg_id
+        assert merged_user.vk_id == vk_id
+        assert merged_user.ds_id == ds_id
+
+    async def test_notes_merged(
+        self, get_url, get_url_key, client: AsyncClient, async_session: AsyncSession, note_factory
+    ):
+        tg_id = 10
+        vk_id = 123
+        ds_id = 123
+        user_1 = await UserFactory(tg_id=tg_id)
+        user_2 = await UserFactory(vk_id=vk_id, ds_id=ds_id)
+        await note_factory(user_id=user_1.id)
+        await note_factory(user_id=user_2.id)
+
+        response_key = await client.get(get_url_key(user_1.id))
+        code = response_key.json()["code"]
+        response_linking = await client.post(get_url(user_2.id), json={"code": code})
+
+        query = select(User)
+        assert response_linking.status_code == status.HTTP_204_NO_CONTENT
+        merged_user = (await async_session.execute(query)).scalars().first()
+        query_notes = select(Note).where(Note.user_id == merged_user.id)
+        notes = (await async_session.execute(query_notes)).scalars().all()
+        assert len(notes) == 2
+
+    async def test_raises_user_not_exists(self, get_url, get_url_key, client: AsyncClient):
+        user_1 = await UserFactory(tg_id=10)
+
+        response_key = await client.get(get_url_key(user_1.id))
+        code = response_key.json()["code"]
+
+        response_linking = await client.post(get_url(user_1.id + 1), json={"code": code})
+
+        assert response_linking.status_code == status.HTTP_404_NOT_FOUND
+        assert response_linking.json()["code"] == "user_not_exists"
+
+    async def test_raises_code_mismatch(self, get_url, get_url_key, client: AsyncClient):
+        user_1 = await UserFactory(tg_id=10, vk_id=None, ds_id=None)
+        user_2 = await UserFactory(tg_id=None, vk_id=123, ds_id=123)
+
+        await client.get(get_url_key(user_1.id))
+
+        response_linking = await client.post(get_url(user_2.id), json={"code": "wrong_code"})
+
+        assert response_linking.status_code == status.HTTP_400_BAD_REQUEST
+        assert response_linking.json()["code"] == "code_mismatch"
