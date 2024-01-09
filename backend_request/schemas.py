@@ -49,3 +49,8 @@ class NoteCreateResponse(Note):
 class FilterNotes:
     title: Optional[str] = None
     tags: Optional[list[str]] = None
+
+
+@dataclass
+class AuthKey:
+    code: str
