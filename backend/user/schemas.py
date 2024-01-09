@@ -1,6 +1,7 @@
 from typing import Optional
 
 from pydantic import BaseModel, model_validator
+from user.exceptions import EmptyUserSocials
 
 
 class UserSocials(BaseModel):
@@ -11,7 +12,7 @@ class UserSocials(BaseModel):
     @model_validator(mode="after")
     def check_for_none(self):
         if not (self.tg_id or self.vk_id or self.ds_id):
-            raise ValueError("at least one id must be present")
+            raise EmptyUserSocials
         return self
 
 

@@ -33,7 +33,7 @@ async def delete(user: User = Depends(get_current_user), session: AsyncSession =
     await User.delete(user.id, session)
 
 
-@router.get("/auth/key", response_model=UserCode)
+@router.get("/{user_id}/auth/key/", response_model=UserCode)
 async def get_auth_key(user: User = Depends(get_current_user), session: aioredis.Redis = Depends(get_redis_session)):
     code_list = [str(random.randint(0, 9)) for i in range(6)]
     code = "".join(code_list)
