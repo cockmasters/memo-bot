@@ -21,6 +21,8 @@ services:
     networks:
       - net
     restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
   api:
     image: huscker/memo-bot-backend:${IMAGE_TAG}
     env_file:

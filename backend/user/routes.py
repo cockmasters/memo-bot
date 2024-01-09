@@ -24,7 +24,7 @@ async def create(user_create: UserSocials, session: AsyncSession = Depends(get_p
 
 
 @router.get("/", response_model=UserFull)
-async def get(user: UserSocials, session: AsyncSession = Depends(get_postgres_session)):
+async def get_by_social_id(user: UserSocials = Depends(), session: AsyncSession = Depends(get_postgres_session)):
     return await User.get_by_social_id(user.tg_id, user.vk_id, user.ds_id, session=session)
 
 
@@ -38,7 +38,7 @@ async def get_auth_key(user: User = Depends(get_current_user), session: aioredis
     code_list = [str(random.randint(0, 9)) for i in range(6)]
     code = "".join(code_list)
     await auth_key_repository.set(str(user.id), code, session=session)
-    return code
+    return UserCode(code=code)
 
 
 @router.post("/link/", status_code=status.HTTP_204_NO_CONTENT)
