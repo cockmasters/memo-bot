@@ -16,7 +16,9 @@ class User(BaseModel):
     ds_id: Mapped[int] = mapped_column(Integer, unique=True, index=True, nullable=True)
 
     @staticmethod
-    async def get_by_social_id(tg_id: int, vk_id: int, ds_id: int, session: AsyncSession) -> "User":
+    async def get_by_social_id(
+        tg_id: Optional[int], vk_id: Optional[int], ds_id: Optional[int], session: AsyncSession
+    ) -> "User":
         query = select(User).where(User.tg_id == tg_id, User.vk_id == vk_id, User.ds_id == ds_id)
         user: Optional[User] = (await session.execute(query)).scalars().first()
         if not user:
