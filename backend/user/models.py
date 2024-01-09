@@ -19,7 +19,13 @@ class User(BaseModel):
     async def get_by_social_id(
         tg_id: Optional[int], vk_id: Optional[int], ds_id: Optional[int], session: AsyncSession
     ) -> "User":
-        query = select(User).where(User.tg_id == tg_id, User.vk_id == vk_id, User.ds_id == ds_id)
+        query = select(User)
+        if tg_id:
+            query = query.where(User.tg_id == tg_id)
+        if vk_id:
+            query = query.where(User.vk_id == vk_id)
+        if ds_id:
+            query = query.where(User.ds_id == ds_id)
         user: Optional[User] = (await session.execute(query)).scalars().first()
         if not user:
             raise UserNotExists
