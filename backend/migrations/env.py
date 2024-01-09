@@ -4,7 +4,7 @@ from alembic import context
 from config import settings
 from core.postgres.base import Base
 from user.models import User  # noqa
-from note.models import Note, Tag # noqa
+from user.note.models import Note, Tag # noqa
 from sqlalchemy.ext.asyncio import create_async_engine
 
 config = context.config
@@ -26,7 +26,7 @@ async def run_migrations(engine):
 
 def run_migrations_online() -> None:
     engine = create_async_engine(
-        settings.DATABASE_URL.unicode_string(), echo=True, future=True
+        settings.POSTGRES_URL.unicode_string(), echo=True, future=True
     )
     asyncio.run(run_migrations(engine))
 

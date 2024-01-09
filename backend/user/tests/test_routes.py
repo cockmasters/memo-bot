@@ -1,11 +1,11 @@
 import pytest
-from user.models import User
-from user.tests.factories import UserFactory
 from fastapi import status
 from httpx import AsyncClient
 from pytest_lambda import static_fixture
 from sqlalchemy import Exists, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from user.models import User
+from user.tests.factories import UserFactory
 
 pytestmark = pytest.mark.asyncio
 
