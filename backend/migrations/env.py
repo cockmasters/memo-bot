@@ -26,7 +26,7 @@ async def run_migrations(engine):
 
 def run_migrations_online() -> None:
     engine = create_async_engine(
-        settings.DATABASE_URL.unicode_string(), echo=True, future=True
+        settings.POSTGRES_URL.unicode_string(), echo=True, future=True
     )
     asyncio.run(run_migrations(engine))
 
