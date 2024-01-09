@@ -17,4 +17,4 @@ class UserNotExists(BusinessException):
 class CodeMismatch(BusinessException):
     status_code = status.HTTP_400_BAD_REQUEST
     detail_template = "Неверный проверочный код"
-    code = "code mismatch"
+    code = "code_mismatch"
