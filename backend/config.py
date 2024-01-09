@@ -36,7 +36,7 @@ class BackendSettings(BaseSettings):
 
     @model_validator(mode="before")
     def redis_postgres_db_url(self) -> Self:
-        self["REDIS_URL"] = RedisDsn.build(scheme="redis", host=self["REDIS_HOST"], port=self["REDIS_PORT"])
+        self["REDIS_URL"] = RedisDsn.build(scheme="redis", host=self["REDIS_HOST"], port=int(self["REDIS_PORT"]))
         return self
 
 

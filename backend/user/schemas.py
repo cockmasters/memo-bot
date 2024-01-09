@@ -23,3 +23,7 @@ class UserFull(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class UserCode(BaseModel):
+    code: str

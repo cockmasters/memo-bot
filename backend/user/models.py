@@ -32,10 +32,16 @@ class User(BaseModel):
         return user
 
     @staticmethod
-    async def create(tg_id: int, vk_id: int, ds_id: int, session: AsyncSession) -> "User":
+    async def create(
+        session: AsyncSession, tg_id: Optional[int] = None, vk_id: Optional[int] = None, ds_id: Optional[int] = None
+    ) -> "User":
         query = insert(User).values(tg_id=tg_id, vk_id=vk_id, ds_id=ds_id).returning(User)
         try:
             user = (await session.execute(query)).scalars().first()
         except IntegrityError as e:
             raise UserExists from e
         return user
+
+    @staticmethod
+    async def delete(user_id: int, session: AsyncSession):
+        await session.delete(await User.get_by_id(user_id, session))

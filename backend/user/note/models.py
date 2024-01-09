@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 from core.postgres.base import BaseModel
-from sqlalchemy import Column, DateTime, ForeignKey, String, Text, UniqueConstraint, delete, func, insert, select
+from sqlalchemy import Column, DateTime, ForeignKey, String, Text, delete, func, insert, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, joinedload, mapped_column, relationship
@@ -14,8 +14,8 @@ from user.note.schemas import NoteFilter, NoteUpdate
 association_table = Table(
     "notes_tags",
     BaseModel.metadata,
-    Column("note_id", ForeignKey("note.id"), primary_key=True),
-    Column("tag_id", ForeignKey("tag.id"), primary_key=True),
+    Column("note_id", ForeignKey("note.id", ondelete="cascade"), primary_key=True),
+    Column("tag_id", ForeignKey("tag.id", ondelete="cascade"), primary_key=True),
 )
 
 
@@ -28,7 +28,6 @@ class Note(BaseModel):
     created: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
 
     tags: Mapped[list["Tag"]] = relationship(back_populates="notes", secondary=association_table)
-    __table_args__ = (UniqueConstraint("user_id", "title", name="uix_title_user_id"),)
 
     @staticmethod
     async def get_by_user_id(user_id: int, session: AsyncSession) -> "Note":
@@ -56,7 +55,7 @@ class Note(BaseModel):
     async def delete(note_id: int, session: AsyncSession):
         association_delete = delete(association_table).filter_by(note_id=note_id).returning(association_table)
         await session.execute(association_delete)
-        query = delete(Note).filter_by(note_id=note_id)
+        query = delete(Note).filter_by(id=note_id)
         await session.execute(query)
 
     @staticmethod
@@ -105,6 +104,11 @@ class Note(BaseModel):
         query = select(Note).where(Note.user_id == user_id).options(joinedload(Note.tags)).order_by(Note.title)
         notes = list((await session.execute(query)).scalars().unique().all())
         return notes
+
+    @staticmethod
+    async def replace_author(old_user_id: int, new_user_id: int, session: AsyncSession):
+        query = update(Note).where(Note.user_id == old_user_id).values(user_id=new_user_id)
+        await session.execute(query)
 
 
 class Tag(BaseModel):
