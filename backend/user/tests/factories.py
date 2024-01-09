@@ -6,7 +6,8 @@ from user.models import User
 
 class UserFactory(AsyncSQLAlchemyFactory):
     tg_id = factory.Sequence(lambda n: n)
-    username = factory.Faker("first_name")
+    vk_id = factory.Sequence(lambda n: n)
+    ds_id = factory.Sequence(lambda n: n)
 
     class Meta:
         model = User
