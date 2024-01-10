@@ -2,7 +2,7 @@ from backend_request.schemas import FilterNotes, NoteCreateRequest
 from vk import api
 from vk.core.exception_handlers import handle_api_exception
 from vk.core.middlewares import user_id
-from vk.note.formatter import format_notes, format_tags
+from vk.note.formatter import extract_tags, format_notes
 from vk.note.states import AddNoteStates, state_dispenser
 from vkbottle.bot import BotLabeler, Message
 
@@ -34,7 +34,7 @@ async def add_note_body(message: Message):
 @labeler.message(state=AddNoteStates.BODY)
 @handle_api_exception
 async def add_note_tags(message: Message):
-    tags = format_tags(message.text)
+    tags = extract_tags(message.text)
     state = await state_dispenser.get(message.peer_id)
     await state_dispenser.set(message.peer_id, AddNoteStates.TAGS, tags=tags, **state.payload)
 
@@ -64,7 +64,7 @@ async def filter_by_title(message: Message, title: str):
 @labeler.message(text=["/filter_tags <tags>"])
 @handle_api_exception
 async def filter_by_tags(message: Message, tags: str):
-    tags: list[str] = format_tags(tags)
+    tags: list[str] = extract_tags(tags)
     filter_args = FilterNotes(tags=tags)
     notes = await api.filter_notes(data=filter_args, user_id=user_id.get())
     await message.answer(format_notes(notes))
