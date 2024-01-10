@@ -1,7 +1,7 @@
 from typing import Optional
 
 from core.postgres.base import BaseModel
-from sqlalchemy import Integer, insert, select
+from sqlalchemy import String, insert, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, mapped_column
@@ -11,13 +11,13 @@ from user.exceptions import UserExists, UserNotExists
 class User(BaseModel):
     __tablename__ = "user"
 
-    tg_id: Mapped[int] = mapped_column(Integer, unique=True, index=True, nullable=True)
-    vk_id: Mapped[int] = mapped_column(Integer, unique=True, index=True, nullable=True)
-    ds_id: Mapped[int] = mapped_column(Integer, unique=True, index=True, nullable=True)
+    tg_id: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=True)
+    vk_id: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=True)
+    ds_id: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=True)
 
     @staticmethod
     async def get_by_social_id(
-        tg_id: Optional[int], vk_id: Optional[int], ds_id: Optional[int], session: AsyncSession
+        tg_id: Optional[str], vk_id: Optional[str], ds_id: Optional[str], session: AsyncSession
     ) -> "User":
         query = select(User)
         if tg_id:
@@ -41,7 +41,7 @@ class User(BaseModel):
 
     @staticmethod
     async def create(
-        session: AsyncSession, tg_id: Optional[int] = None, vk_id: Optional[int] = None, ds_id: Optional[int] = None
+        session: AsyncSession, tg_id: Optional[str] = None, vk_id: Optional[str] = None, ds_id: Optional[str] = None
     ) -> "User":
         query = insert(User).values(tg_id=tg_id, vk_id=vk_id, ds_id=ds_id).returning(User)
         try:
