@@ -52,4 +52,4 @@ async def link_account(
     if not user_id:
         raise CodeMismatch
     await merge_accounts(user.id, user_id, postgres_session)
-    await auth_key_repository.delete(code, session=redis_session)
+    await auth_key_repository.delete(code.code, session=redis_session)

@@ -5,9 +5,9 @@ from user.exceptions import EmptyUserSocials
 
 
 class UserSocials(BaseModel):
-    tg_id: Optional[int] = None
-    vk_id: Optional[int] = None
-    ds_id: Optional[int] = None
+    tg_id: Optional[str] = None
+    vk_id: Optional[str] = None
+    ds_id: Optional[str] = None
 
     @model_validator(mode="after")
     def check_for_none(self):
@@ -18,9 +18,9 @@ class UserSocials(BaseModel):
 
 class UserFull(BaseModel):
     id: int
-    tg_id: Optional[int]
-    vk_id: Optional[int]
-    ds_id: Optional[int]
+    tg_id: Optional[str]
+    vk_id: Optional[str]
+    ds_id: Optional[str]
 
     class Config:
         from_attributes = True
