@@ -28,7 +28,7 @@ jobs:
           username: huscker
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build the Docker image
-        run: docker build telegram/ -t huscker/memo-bot-tg:$(git rev-parse --short "$GITHUB_SHA")
+        run: docker build -t huscker/memo-bot-tg:$(git rev-parse --short "$GITHUB_SHA") -f telegram/Dockerfile .
       - name: Push the Docker image
         run: docker push huscker/memo-bot-tg:$(git rev-parse --short "$GITHUB_SHA")
 
@@ -42,7 +42,7 @@ jobs:
           username: huscker
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build the Docker image
-        run: docker build vk/ -t huscker/memo-bot-vk:$(git rev-parse --short "$GITHUB_SHA")
+        run: docker build vk/ -t huscker/memo-bot-vk:$(git rev-parse --short "$GITHUB_SHA") -f vk/Dockerfile .
       - name: Push the Docker image
         run: docker push huscker/memo-bot-vk:$(git rev-parse --short "$GITHUB_SHA")
 

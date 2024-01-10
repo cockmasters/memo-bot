@@ -12,9 +12,9 @@ RUN apt-get update && \
 RUN pip install poetry && \
     poetry config virtualenvs.create false
 
-COPY pyproject.toml ./poetry.lock /app/
+COPY telegram/pyproject.toml telegram/poetry.lock /app/
 RUN poetry install --no-root --no-dev
 
 COPY . .
 
-CMD poetry run python __main__.py
+CMD PYTHONPATH=. poetry run python telegram/__main__.py
