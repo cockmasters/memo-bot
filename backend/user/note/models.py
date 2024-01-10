@@ -43,6 +43,7 @@ class Note(BaseModel):
         note: Note = Note(user_id=user_id, title=title, body=body)
         note.tags = [await Tag.create_or_get(tag, session) for tag in tags] if tags else []
         session.add(note)
+        await session.commit()
         return note
 
     @staticmethod
