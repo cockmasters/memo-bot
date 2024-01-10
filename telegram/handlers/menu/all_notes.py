@@ -41,7 +41,9 @@ def format_note(note: Note):
 
 @router.inline_query(F.query.startswith("tags"))
 async def show_all_tags(inline_query: InlineQuery):
-    tags: list[str] = inline_query.query.replace(" ", "").split(",")
+    query: str = inline_query.query.replace("tags", "")
+    query = query.strip()
+    tags: list[str] = query.replace(" ", "").split(",")
     filter_args = FilterNotes(tags=tags)
     notes = await api.filter_notes(data=filter_args, user_id=user_id.get())
 
@@ -62,15 +64,17 @@ async def show_all_tags(inline_query: InlineQuery):
     await inline_query.answer(results, is_personal=True, cache_time=0)
 
 
-@router.inline_query()
+@router.inline_query(F.query.startswith("title"))
 async def show_all_notes(inline_query: InlineQuery):
     notes: List[Note] = await api.get_notes_all(user_id=user_id.get())
-    if inline_query.query is not None and inline_query.query != "":
+    query = inline_query.query.replace("title", "")
+    query = query.strip()
+    if query is not None and query != "":
         filter_notes = []
         for note in notes:
-            if inline_query.query in note.title:
+            if query in note.title:
                 filter_notes.append(note)
-        filter_notes.sort(key=lambda x: x.title.startswith(inline_query.query), reverse=True)
+        filter_notes.sort(key=lambda x: x.title.startswith(query), reverse=True)
         notes = filter_notes
 
     results = []
