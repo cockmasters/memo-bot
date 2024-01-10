@@ -10,7 +10,7 @@ class UserExists(BusinessException):
 
 class UserNotExists(BusinessException):
     status_code = status.HTTP_404_NOT_FOUND
-    detail_template = "Пользователь не сущетсвует"
+    detail_template = "Пользователь не существует"
     code = "user_not_exists"
 
 
