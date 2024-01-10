@@ -10,10 +10,8 @@ from telegram import api
 from telegram.bot.bot import bot
 from telegram.middlewares.update_to_tg_id import update_to_tg_id
 
-user_id: ContextVar[Optional[int]] = ContextVar("user_id", default=None)
 
-
-class UserMiddleware(BaseMiddleware):
+class BackendApiExcMiddleware(BaseMiddleware):
     async def __call__(
         self,
         handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
@@ -22,12 +20,9 @@ class UserMiddleware(BaseMiddleware):
     ) -> Any:
         tg_id = update_to_tg_id(update)
         try:
-            profile = await api.get_by_socials_tg(tg_id=str(tg_id))
-        except BackendApi.Error:
-            user = CreateUserRequest(tg_id=str(tg_id))
-            profile = await api.create_user(data=user)
-            await bot.send_message(chat_id=tg_id, text="Аккаунт создан!")
+            return await handler(update, data)
+        except BackendApi.Error as exc:
+            if not exc.message:
+                await bot.send_message(chat_id=tg_id, text="Во время обработки запроса произошла ошибка")
+            await bot.send_message(chat_id=tg_id, text=exc.message)
 
-        user_id.set(profile.id)
-
-        return await handler(update, data)
