@@ -6,24 +6,24 @@ from typing import Optional
 @dataclass
 class GetUserProfileResponse:
     id: int
-    vk_id: Optional[int] = None
-    tg_id: Optional[int] = None
-    ds_id: Optional[int] = None
+    vk_id: Optional[str] = None
+    tg_id: Optional[str] = None
+    ds_id: Optional[str] = None
 
 
 @dataclass
 class CreateUserRequest:
-    vk_id: Optional[int] = None
-    tg_id: Optional[int] = None
-    ds_id: Optional[int] = None
+    vk_id: Optional[str] = None
+    tg_id: Optional[str] = None
+    ds_id: Optional[str] = None
 
 
 @dataclass
 class CreateUserResponse:
     id: int
-    vk_id: Optional[int] = None
-    tg_id: Optional[int] = None
-    ds_id: Optional[int] = None
+    vk_id: Optional[str] = None
+    tg_id: Optional[str] = None
+    ds_id: Optional[str] = None
 
 
 @dataclass

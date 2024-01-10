@@ -50,10 +50,16 @@ class BackendApi:
         return response_type(**response.json())
 
     create_user = partialmethod(request, method="POST", path="/api/user/", response_type=CreateUserResponse)
-    get_by_socials = partialmethod(
+    get_by_socials_vk = partialmethod(
         request,
         method="GET",
         path="/api/user/?vk_id={vk_id}",
+        response_type=GetUserProfileResponse,
+    )
+    get_by_socials_tg = partialmethod(
+        request,
+        method="GET",
+        path="/api/user/?tg_id={tg_id}",
         response_type=GetUserProfileResponse,
     )
     create_note = partialmethod(

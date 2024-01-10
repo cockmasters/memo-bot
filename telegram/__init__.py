@@ -1,5 +1,5 @@
-from config import settings
+from config import backend_settings
 
-from ..api import BackendApi
+from backend_request.api import BackendApi
 
-api = BackendApi(settings.BASE_URL)
+api = BackendApi(backend_settings.BASE_URL)
