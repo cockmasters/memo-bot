@@ -1,8 +1,8 @@
 import asyncio
 
-from bot.bot import bot_setup, bot
-from bot.dispatcher import registration_dispatcher, dp
-from bot.log import start_logging
+from telegram.bot.bot import bot_setup, bot
+from telegram.bot.dispatcher import registration_dispatcher, dp
+from telegram.bot.log import start_logging
 
 
 async def main():

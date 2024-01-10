@@ -6,10 +6,10 @@ from typing import Callable, Dict, Any, Awaitable, Optional
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject, Update, FSInputFile
 
-from bot.bot import bot
-from config import bot_settings
-from middlewares.bot_info.BotInfo import BotInfo
-from middlewares.bot_info.update_to_str import update_to_str
+from telegram.bot.bot import bot
+from telegram.config import bot_settings
+from telegram.middlewares.bot_info.BotInfo import BotInfo
+from telegram.middlewares.bot_info.update_to_str import update_to_str
 
 
 class LogMiddleware(BaseMiddleware):

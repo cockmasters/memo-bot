@@ -5,8 +5,8 @@ from typing import Callable, Dict, Any, Awaitable, List, Optional
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject, Update, Message, InlineQuery, CallbackQuery
 
-from middlewares.bot_info.BotInfo import BotInfo
-from middlewares.bot_info.update_to_str import general_to_str
+from telegram.middlewares.bot_info.BotInfo import BotInfo
+from telegram.middlewares.bot_info.update_to_str import general_to_str
 
 
 class NewUserMiddleware(BaseMiddleware):

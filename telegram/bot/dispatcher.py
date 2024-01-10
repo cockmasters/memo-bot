@@ -1,10 +1,11 @@
 from aiogram import Dispatcher
 
-from bot.bot_info import bot_info
-from handlers import base
-from middlewares.bot_info.LogMiddleware import LogMiddleware
-from middlewares.bot_info.NewUserMiddleware import NewUserMiddleware
-from utils.root_dir import root_path
+from telegram.bot.bot_info import bot_info
+from telegram.handlers import base
+from telegram.middlewares.bot_info.LogMiddleware import LogMiddleware
+from telegram.middlewares.bot_info.NewUserMiddleware import NewUserMiddleware
+from telegram.middlewares.UserMiddleware import UserMiddleware
+from telegram.utils.root_dir import root_path
 
 dp = Dispatcher()
 
@@ -17,4 +18,5 @@ def registration_dispatcher(dispatcher: Dispatcher) -> None:
         limit_counter=30
     ))
     dispatcher.update.outer_middleware(NewUserMiddleware(bot_info=bot_info))
+    dispatcher.update.outer_middleware(UserMiddleware())
     dispatcher.include_routers(base.router)

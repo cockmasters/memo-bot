@@ -14,7 +14,7 @@ class UserMiddleware(BaseMiddleware[Message]):
     async def pre(self):
         vk_user = await self.event.get_user()
         try:
-            profile = await api.get_by_socials(vk_id=vk_user.id)
+            profile = await api.get_by_socials_vk(vk_id=vk_user.id)
         except BackendApi.Error:
             user = CreateUserRequest(vk_id=vk_user.id)  # TODO: fixme
             profile = await api.create_user(data=user)

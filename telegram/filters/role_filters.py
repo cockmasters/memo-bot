@@ -1,7 +1,8 @@
 from aiogram.filters import BaseFilter
 from aiogram.types import Message, CallbackQuery
 
-from config import bot_settings
+from telegram.config import bot_settings
+
 
 
 class AdminFilter(BaseFilter):
