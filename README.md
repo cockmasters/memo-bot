@@ -9,7 +9,7 @@
 # Структура проекта
 ## Backend
 ## API Документация
-Актуальную документацию можно просмотреть в [OpenAPI схеме](docs%2Fopenapi.json)
+Актуальную документацию можно просмотреть в [OpenAPI схеме](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/cockmasters/memo-bot/master/docs/openapi.json)
 ## Установка для разработки:
 ### Требования
 1) Необходим установленный python3.11
@@ -102,7 +102,7 @@ cat .env.template > .env
 poetry run telegram/__main__.py
 ```
 ## Небольшая витрина функционала
-1) Пример добавления записки в вк боте
+1) Пример добавления записки в вк боте \
 ![vk_showcase.png](docs%2Fstatic%2Fvk_showcase.png)
-2) Приветствие в тг боте
+2) Приветствие в тг боте \
 ![tg_showcase.png](docs%2Fstatic%2Ftg_showcase.png)
