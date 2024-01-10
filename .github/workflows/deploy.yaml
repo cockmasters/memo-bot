@@ -18,6 +18,48 @@ jobs:
       - name: Push the Docker image
         run: docker push huscker/memo-bot-backend:$(git rev-parse --short "$GITHUB_SHA")
 
+  build-tg:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: huscker
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build the Docker image
+        run: docker build telegram/ -t huscker/memo-bot-tg:$(git rev-parse --short "$GITHUB_SHA")
+      - name: Push the Docker image
+        run: docker push huscker/memo-bot-tg:$(git rev-parse --short "$GITHUB_SHA")
+
+  build-vk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: huscker
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build the Docker image
+        run: docker build vk/ -t huscker/memo-bot-vk:$(git rev-parse --short "$GITHUB_SHA")
+      - name: Push the Docker image
+        run: docker push huscker/memo-bot-vk:$(git rev-parse --short "$GITHUB_SHA")
+
+  build-discord:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: huscker
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build the Docker image
+        run: docker build discord/ -t huscker/memo-bot-discord:$(git rev-parse --short "$GITHUB_SHA")
+      - name: Push the Docker image
+        run: docker push huscker/memo-bot-discord:$(git rev-parse --short "$GITHUB_SHA")
+
   migrate:
     runs-on: ubuntu-latest
     needs: [build-backend]
@@ -45,7 +87,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: [migrate]
+    needs: [migrate, build-vk, build-tg, build-discord]
     steps:
       - uses: actions/checkout@v3
       - id: ssh-context
@@ -64,6 +106,6 @@ jobs:
       - name: Update docker tag
         run: echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> .env
       - name: Kill previous deployment
-        run: DOCKER_HOST=ssh://${{ steps.ssh-context.outputs.SERVER }} docker-compose -p memo-bot-dev stop api
+        run: DOCKER_HOST=ssh://${{ steps.ssh-context.outputs.SERVER }} docker-compose -p memo-bot-dev stop api tg-bot vk-bot discord-bot
       - name: Recreate deployment
-        run: DOCKER_HOST=ssh://${{ steps.ssh-context.outputs.SERVER }} docker-compose -p memo-bot-dev up -d api
+        run: DOCKER_HOST=ssh://${{ steps.ssh-context.outputs.SERVER }} docker-compose -p memo-bot-dev up -d api tg-bot vk-bot discord-bot
