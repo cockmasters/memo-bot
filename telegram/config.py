@@ -3,6 +3,9 @@ from pydantic_settings import BaseSettings
 
 class BotSettings(BaseSettings):
     TG_TOKEN: str
+    TG_ADMIN: int
+    TG_TOKEN_BOT_LOG: str
+    TG_ADMIN_BOT_LOG: int
 
     class Config:
         env_file = ".env"
@@ -17,5 +20,5 @@ class BackendSettings(BaseSettings):
         extra = "ignore"
 
 
-settings = BotSettings(extra="ignore")
+bot_settings = BotSettings(extra="ignore")
 backend_settings = BackendSettings(extra="ignore")
