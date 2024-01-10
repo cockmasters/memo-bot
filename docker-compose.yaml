@@ -27,8 +27,8 @@ services:
     image: huscker/memo-bot-backend:${IMAGE_TAG}
     env_file:
       - .env
-    ports:
-      - "8000:8000"
+    expose:
+      - 8000
     command:
       - "uvicorn"
       - "app:app"

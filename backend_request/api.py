@@ -85,4 +85,4 @@ class BackendApi:
         response_type=None,
     )
     get_auth_key = partialmethod(request, method="GET", path="/api/user/{user_id}/auth/key/", response_type=AuthKey)
-    link_account = partialmethod(request, method="POST", path="/api/user/{user_id}/link/", response_type=dict)
+    link_account = partialmethod(request, method="POST", path="/api/user/{user_id}/link/", response_type=lambda _: None)
