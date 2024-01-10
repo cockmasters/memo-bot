@@ -15,7 +15,11 @@ def menu_keyboard() -> InlineKeyboardMarkup:
     )
     builder.add(InlineKeyboardButton(
             text="Показать все записки",
-            switch_inline_query_current_chat=""
+            switch_inline_query_current_chat="title"
         ))
+    builder.add(InlineKeyboardButton(
+            text="Найти записку по тегам",
+            switch_inline_query_current_chat="tags"
+    ))
     builder.adjust(1)
     return builder.as_markup()
