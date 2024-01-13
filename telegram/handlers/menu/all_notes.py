@@ -113,3 +113,28 @@ async def show_all_notes(inline_query: InlineQuery):
     if not results:
         results = DefaultResults.not_found
     await inline_query.answer(results, is_personal=True, cache_time=0)
+
+
+@router.inline_query(F.query.startswith("date"))
+async def show_all_notes(inline_query: InlineQuery):
+    notes: List[Note] = await api.get_notes_all(user_id=user_id.get())
+    query = inline_query.query.replace("date", "")
+    query = query.strip()
+    if query is not None and query != "":
+        filter_notes = []
+        for note in notes:
+            if query in note.title:
+                filter_notes.append(note)
+        filter_notes.sort(key=lambda x: x.title.startswith(query), reverse=True)
+        notes = filter_notes
+    notes.sort(key=lambda x: x.created, reverse=True)
+
+    flag_chat_with_bot = False
+    if inline_query.chat_type is not None and inline_query.chat_type == "sender":
+        flag_chat_with_bot = True
+
+    results = inline_results(notes, flag_chat_with_bot)
+
+    if not results:
+        results = DefaultResults.not_found
+    await inline_query.answer(results, is_personal=True, cache_time=0)
