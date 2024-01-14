@@ -3,7 +3,7 @@ from functools import partialmethod
 from typing import Optional, Type, TypeVar, get_args
 
 from backend_request.schemas import AuthKey, CreateUserResponse, GetUserProfileResponse, Note, NoteCreateResponse
-from httpx import AsyncClient, HTTPError, HTTPStatusError
+from httpx import AsyncClient, HTTPError, HTTPStatusError, Response
 
 RESPONSE = TypeVar("RESPONSE")
 
@@ -29,12 +29,12 @@ class BackendApi:
         response_type: Type[RESPONSE],
         data: Optional = None,
         **path_params,
-    ) -> RESPONSE | list[RESPONSE]:
+    ) -> RESPONSE | list[RESPONSE] | None:
         try:
             path = path.format(**path_params)
             data = asdict(data) if is_dataclass(data) else None
             async with AsyncClient() as client:
-                response = await client.request(method=method, url=f"{self.base_url}{path}", json=data)
+                response: Response = await client.request(method=method, url=f"{self.base_url}{path}", json=data)
                 response.raise_for_status()
         except HTTPStatusError as exc:
             raise BackendApi.Error(
@@ -43,11 +43,12 @@ class BackendApi:
         except HTTPError as exc:
             status_code = response.status_code if response else None
             raise BackendApi.Error(method, status_code) from exc
-        data = response.json()
+        if response.status_code != 204:
+            data = response.json()
         if isinstance(data, list):
             subtype = get_args(response_type)[0]
             return [subtype(**el) for el in data]
-        return response_type(**response.json())
+        return response_type(**response.json()) if response.status_code != 204 else None
 
     create_user = partialmethod(request, method="POST", path="/api/user/", response_type=CreateUserResponse)
     get_by_socials_vk = partialmethod(

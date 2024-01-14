@@ -21,5 +21,9 @@ def menu_keyboard() -> InlineKeyboardMarkup:
             text="Найти записку по тегам",
             switch_inline_query_current_chat="tags "
     ))
+    builder.add(InlineKeyboardButton(
+        text="Найти записку по названию с сортировкой по дате",
+        switch_inline_query_current_chat="date "
+    ))
     builder.adjust(1)
     return builder.as_markup()
